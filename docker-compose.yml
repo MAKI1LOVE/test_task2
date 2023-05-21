@@ -1,0 +1,21 @@
+version: "3.0"
+services:
+  sql:
+    image: "postgres:alpine"
+    environment:
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - postgresdata:/tmp/data/db
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 3s
+      timeout: 3s
+  app:
+    build: ./app
+    ports:
+      - "8080:8080"
+    depends_on:
+      sql:
+        condition: "service_healthy"
+volumes:
+  postgresdata:
